@@ -1,0 +1,362 @@
+prompt --application/pages/page_00044
+begin
+--   Manifest
+--     PAGE: 00044
+--   Manifest End
+wwv_flow_imp.component_begin (
+ p_version_yyyy_mm_dd=>'2022.04.12'
+,p_release=>'22.1.3'
+,p_default_workspace_id=>13501875225360637847
+,p_default_application_id=>78259
+,p_default_id_offset=>0
+,p_default_owner=>'FLMPJGAZDYSOYO'
+);
+wwv_flow_imp_page.create_page(
+ p_id=>44
+,p_user_interface_id=>wwv_flow_imp.id(33247297241416359140)
+,p_name=>'Order tracking progress bar'
+,p_alias=>'ORDER-TRACKING-PROGRESS-BAR'
+,p_step_title=>'Order tracking progress bar'
+,p_autocomplete_on_off=>'OFF'
+,p_inline_css=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'#P44_STATUS_VALUE {',
+'    border-radius: 12px;',
+'    background-color: rgb(210 210 210);',
+'    font-size: 18px;',
+'    font-weight: 900;',
+'    color: black;',
+'}',
+'a {',
+'    -webkit-text-decoration-skip: objects;',
+'    color: #ffffff;',
+'}',
+'',
+'img#idd2,#idd2,img#idd3,#idd3,img#idd4,#idd4 {',
+'    MARGIN-LEFT: 22px;',
+'}',
+'',
+'ol.progtrckr li {',
+'    display: inline-block;',
+'    text-align: center;',
+'}',
+'',
+'',
+'.arrow-steps .step {',
+'	font-size: 14px;',
+'	text-align: center;',
+'	color: #fff;',
+'	cursor: default;',
+'	margin: 0 9px;',
+'	padding: 6px 10px 10px 30px;',
+'	min-width: 160px;',
+'	float: left;',
+'	position: relative;',
+'	background-color: #7a736e;',
+'	-webkit-user-select: none;',
+'	-moz-user-select: none;',
+'	-ms-user-select: none;',
+'	user-select: none; ',
+'  transition: background-color 0.2s ease;',
+'}',
+'',
+'.arrow-steps .step:after,',
+'.arrow-steps .step:before {',
+'	content: " ";',
+'	position: absolute;',
+'	top: 0;',
+'	right: -17px;',
+'	width: 0;',
+'	height: 0;',
+'	border-top: 19px solid transparent;',
+'	border-bottom: 17px solid transparent;',
+'	border-left: 17px solid #7a736e;	',
+'	z-index: 2;',
+'  transition: border-color 0.2s ease;',
+'}',
+'',
+'.arrow-steps .step:before {',
+'	right: auto;',
+'	left: 0;',
+'	border-left: 17px solid #fff;	',
+'	z-index: 0;',
+'}',
+'.arrow-steps .step:first-child:before {',
+'	border: none;',
+'}',
+'.arrow-steps .step.current {',
+'	background-color: green;',
+'}',
+'.arrow-steps .step.current:after {',
+'	border-left: 17px solid green;	',
+'}'))
+,p_page_template_options=>'#DEFAULT#'
+,p_protection_level=>'C'
+,p_page_component_map=>'10'
+,p_last_updated_by=>'JABER0181@GMAIL.COM'
+,p_last_upd_yyyymmddhh24miss=>'20211127194105'
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(14317178924457638649)
+,p_plug_name=>'Order tracking'
+,p_region_template_options=>'#DEFAULT#:t-Region--scrollBody'
+,p_plug_template=>wwv_flow_imp.id(33247212693934359074)
+,p_plug_display_sequence=>10
+,p_include_in_reg_disp_sel_yn=>'Y'
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+,p_attribute_01=>'N'
+,p_attribute_02=>'HTML'
+);
+wwv_flow_imp_page.create_page_plug(
+ p_id=>wwv_flow_imp.id(14317179013527638650)
+,p_plug_name=>'Tracking Status'
+,p_region_template_options=>'#DEFAULT#:t-Region--scrollBody'
+,p_plug_template=>wwv_flow_imp.id(33247212693934359074)
+,p_plug_display_sequence=>20
+,p_include_in_reg_disp_sel_yn=>'Y'
+,p_plug_source=>wwv_flow_string.join(wwv_flow_t_varchar2(
+'DECLARE',
+'    l_app            NUMBER := v (''APP_ID'');',
+'    l_session        NUMBER := v (''APP_SESSION'');',
+'',
+'    CURSOR c_check_open IS',
+'        SELECT 1',
+'          FROM DUAL arh',
+'         WHERE :P44_STATUS_VALUE IN (1,',
+'                                     2,',
+'                                     3,',
+'                                     4,',
+'                                     5,',
+'                                     6);                      --Order Received',
+'',
+'    l_open_check     VARCHAR (10);',
+'',
+'    CURSOR c_check_assign IS',
+'        SELECT 1',
+'          FROM DUAL drh',
+'         WHERE :P44_STATUS_VALUE IN (2,',
+'                                     3,',
+'                                     4,',
+'                                     5,',
+'                                     6);                             --Shipped',
+'',
+'    l_assign_check   VARCHAR (10);',
+'',
+'    CURSOR c_check_fwd IS',
+'        SELECT 1',
+'          FROM DUAL ph',
+'         WHERE :P44_STATUS_VALUE IN (3,',
+'                                     4,',
+'                                     5,',
+'                                     6);                      --Carrier Pickup',
+'',
+'    l_fwd_check      VARCHAR (10);',
+'',
+'    CURSOR c_check_cls IS',
+'        SELECT 1',
+'          FROM DUAL cih',
+'         WHERE :P44_STATUS_VALUE IN (4, 5, 6);                   --Appointment',
+'',
+'    l_cls_check      VARCHAR (10);',
+'',
+'    CURSOR c_check_arr IS',
+'        SELECT 1',
+'          FROM DUAL sss',
+'         WHERE :P44_STATUS_VALUE IN (5, 6);              --Arrived at Customer',
+'',
+'    l_cls_arr        VARCHAR (10);',
+'',
+'    CURSOR c_check_del IS',
+'        SELECT 1',
+'          FROM DUAL ccc',
+'         WHERE :P44_STATUS_VALUE = 6;                              --Delivered',
+'',
+'    l_cls_del        VARCHAR (10);',
+'BEGIN',
+'    HTP.p (''<ol class="progtrckr" data-progtrckr-steps="5">'');',
+'',
+'    --htp.p(''<ol >'');',
+'    OPEN c_check_open;',
+'',
+'    FETCH c_check_open INTO l_open_check;',
+'',
+'    IF c_check_open%FOUND',
+'    THEN',
+'        HTP.p (',
+'               ''<div class="arrow-steps clearfix">',
+'          <div class="step current"> <span><a href="''',
+'            || APEX_UTIL.prepare_url (',
+'                   p_url      =>',
+'                          ''f?p=''',
+'                       || l_app',
+'                       || '':186:''',
+'                       || l_session',
+'                       || ''::::P186_REQ_NO:''',
+'                       || :p185_incident,',
+'                   p_dialog   => ''null'')',
+'            || ''"><b>Order Received</b></a></span> </div>'');',
+'    ELSE',
+'        HTP.p (''<div class="arrow-steps clearfix">',
+'          <div class="step"> <span><b>Order Received</b></span> </div>'');',
+'    END IF;',
+'',
+'    CLOSE c_check_open;',
+'',
+'    OPEN c_check_assign;',
+'',
+'    FETCH c_check_assign INTO l_assign_check;',
+'',
+'    IF c_check_assign%FOUND',
+'    THEN',
+'        HTP.p (',
+'               ''<div class="arrow-steps clearfix">',
+'          <div class="step current"> <span><a href="''',
+'            || APEX_UTIL.prepare_url (',
+'                   p_url      =>',
+'                          ''f?p=''',
+'                       || l_app',
+'                       || '':186:''',
+'                       || l_session',
+'                       || ''::::P186_REQ_NO:''',
+'                       || :p185_incident,',
+'                   p_dialog   => ''null'')',
+'            || ''"><b>Shipped</b></a></span> </div>'');',
+'    ELSE',
+'        HTP.p (''<div class="arrow-steps clearfix">',
+'          <div class="step"> <span><b>Shipped</b></span> </div>'');',
+'    END IF;',
+'',
+'    CLOSE c_check_assign;',
+'',
+'',
+'    OPEN c_check_fwd;',
+'',
+'    FETCH c_check_fwd INTO l_fwd_check;',
+'',
+'    IF c_check_fwd%FOUND',
+'    THEN',
+'        --for i in l_fwd_check.first..l_fwd_check.last loop',
+'        HTP.p (',
+'               ''<div class="arrow-steps clearfix">',
+'          <div class="step current"> <span><a href="''',
+'            || APEX_UTIL.prepare_url (',
+'                   p_url      =>',
+'                          ''f?p=''',
+'                       || l_app',
+'                       || '':186:''',
+'                       || l_session',
+'                       || ''::::P186_REQ_NO:''',
+'                       || :p185_incident,',
+'                   p_dialog   => ''null'')',
+'            || ''"><b>Carrier Pickup</b></a></span> </div>'');',
+'    -- end loop;',
+'    ELSE',
+'        HTP.p (''<div class="arrow-steps clearfix">',
+'          <div class="step"> <span><b>Carrier Pickup</b></span> </div>'');',
+'    END IF;',
+'',
+'    CLOSE c_check_fwd;',
+'',
+'    OPEN c_check_cls;',
+'',
+'    FETCH c_check_cls INTO l_cls_check;',
+'',
+'    IF c_check_cls%FOUND',
+'    THEN',
+'        HTP.p (',
+'               ''<div class="arrow-steps clearfix">',
+'          <div class="step current"> <span><a href="''',
+'            || APEX_UTIL.prepare_url (',
+'                   p_url      =>',
+'                          ''f?p=''',
+'                       || l_app',
+'                       || '':186:''',
+'                       || l_session',
+'                       || ''::::P186_REQ_NO:''',
+'                       || :p185_incident,',
+'                   p_dialog   => ''null'')',
+'            || ''"><b>Appointment</b></a></span> </div>'');',
+'    ELSE',
+'        HTP.p (''<div class="arrow-steps clearfix">',
+'          <div class="step"> <span><b>Appointment</b></span> </div>'');',
+'    END IF;',
+'',
+'    CLOSE c_check_cls;',
+'',
+'    OPEN c_check_arr;',
+'',
+'    FETCH c_check_arr INTO l_cls_arr;',
+'',
+'    IF c_check_arr%FOUND',
+'    THEN',
+'        HTP.p (',
+'               ''<div class="arrow-steps clearfix">',
+'          <div class="step current"> <span><a href="''',
+'            || APEX_UTIL.prepare_url (',
+'                   p_url      =>',
+'                          ''f?p=''',
+'                       || l_app',
+'                       || '':186:''',
+'                       || l_session',
+'                       || ''::::P186_REQ_NO:''',
+'                       || :p185_incident,',
+'                   p_dialog   => ''null'')',
+'            || ''"><b>Arrived at Customer</b></a></span> </div>'');',
+'    ELSE',
+'        HTP.p (''<div class="arrow-steps clearfix">',
+'          <div class="step"> <span><b>Arrived at Customer</b></span> </div>'');',
+'    END IF;',
+'',
+'    CLOSE c_check_arr;',
+'',
+'',
+'    OPEN c_check_del;',
+'',
+'    FETCH c_check_del INTO l_cls_del;',
+'',
+'    IF c_check_del%FOUND',
+'    THEN',
+'        HTP.p (',
+'               ''<div class="arrow-steps clearfix">',
+'          <div class="step current"> <span><a href="''',
+'            || APEX_UTIL.prepare_url (',
+'                   p_url      =>',
+'                          ''f?p=''',
+'                       || l_app',
+'                       || '':186:''',
+'                       || l_session',
+'                       || ''::::P186_REQ_NO:''',
+'                       || :p185_incident,',
+'                   p_dialog   => ''null'')',
+'            || ''"><b>Delivered</b></a></span> </div>'');',
+'    ELSE',
+'        HTP.p (''<div class="arrow-steps clearfix">',
+'          <div class="step"> <span><b>Delivered</b></span> </div>'');',
+'    END IF;',
+'',
+'    CLOSE c_check_del;',
+'',
+'    HTP.p (''</ol>'');',
+'END;'))
+,p_plug_source_type=>'NATIVE_PLSQL'
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
+);
+wwv_flow_imp_page.create_page_item(
+ p_id=>wwv_flow_imp.id(16753115226238609301)
+,p_name=>'P44_STATUS_VALUE'
+,p_item_sequence=>10
+,p_item_plug_id=>wwv_flow_imp.id(14317178924457638649)
+,p_prompt=>'Status Value'
+,p_display_as=>'NATIVE_SELECT_LIST'
+,p_lov=>'STATIC:1;1,2;2,3;3,4;4,5;5,6;6'
+,p_lov_display_null=>'YES'
+,p_cHeight=>1
+,p_tag_attributes=>'onchange="apex.submit();" '
+,p_field_template=>wwv_flow_imp.id(33247273645904359119)
+,p_item_template_options=>'#DEFAULT#'
+,p_lov_display_extra=>'YES'
+,p_attribute_01=>'NONE'
+,p_attribute_02=>'N'
+);
+wwv_flow_imp.component_end;
+end;
+/
